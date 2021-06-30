@@ -88,24 +88,6 @@ if ENV['PROFILE']
   exit
 end
 
-if ENV['BENCHMARK_SECONDS']
-  Benchmark.ips do |x|
-    x.config(time: ENV['BENCHMARK_SECONDS'].to_i)
-    x.report("without patch") do
-      $patch = false
-      TestSchema.execute(query)
-    end
-
-    x.report("with patch") do
-      $patch = true
-      TestSchema.execute(query)
-    end
-
-    x.compare!
-  end
-  exit
-end
-
 started_at = Time.now
 N = 10
 N.times do
