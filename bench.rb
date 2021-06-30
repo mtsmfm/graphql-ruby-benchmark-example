@@ -10,24 +10,6 @@ gemfile do
   gem "ruby-prof"
 end
 
-class Concurrent::Collection::MriMapBackend
-  def compute_if_absent(key)
-    if $patch
-      if ::Concurrent::NULL != (stored_value = @backend.fetch(key, ::Concurrent::NULL))
-        stored_value
-      else
-        @write_lock.synchronize { super }
-      end
-    else
-      if stored_value = _get(key)
-        stored_value
-      else
-        @write_lock.synchronize { super }
-      end
-    end
-  end
-end
-
 query = <<~Q
   query {
     articles {
@@ -124,8 +106,6 @@ if ENV['BENCHMARK_SECONDS']
   exit
 end
 
-$patch = ENV['APPLY_PATCH'] == '1'
-puts "patch: #{$patch}"
 started_at = Time.now
 N = 10
 N.times do
